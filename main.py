@@ -51,7 +51,7 @@ k_slider = pygame_gui.elements.UIHorizontalSlider(
 theta_slider = pygame_gui.elements.UIHorizontalSlider(
     relative_rect=pygame.Rect((70, 40, 200, 20)),
     start_value=1.267,
-    value_range=(0.1, 6.28),  # theta range from 0 to 2*pi
+    value_range=(0.001, 3.14),  # theta range from 0 to pi
     manager=manager
 )
 
@@ -64,16 +64,23 @@ scaler_slider = pygame_gui.elements.UIHorizontalSlider(
 
 # Create buttons for incrementing and decrementing steps
 increment_button = pygame_gui.elements.UIButton(
-    relative_rect=pygame.Rect((70, 100, 90, 30)),
+    relative_rect=pygame.Rect((70, 130, 90, 30)),
     text='+',
     manager=manager
 )
 
 decrement_button = pygame_gui.elements.UIButton(
-    relative_rect=pygame.Rect((180, 100, 90, 30)),
+    relative_rect=pygame.Rect((180, 130, 90, 30)),
     text='-',
     manager=manager
 )
+
+# Create text entry for typing the steps value
+steps_entry = pygame_gui.elements.UITextEntryLine(
+    relative_rect=pygame.Rect((70, 100, 200, 30)),
+    manager=manager
+)
+steps_entry.set_text('0')  # Initial value for steps
 
 # Set up fonts
 font = pygame.font.Font(None, 24)
@@ -103,6 +110,14 @@ while running:
             elif event.ui_element == decrement_button:
                 steps = max(0, steps - 1)  # Ensure steps doesn't go below 0
 
+        # Check if the text entry has been updated
+        if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
+            if event.ui_element == steps_entry:
+                try:
+                    steps = max(0, int(steps_entry.get_text()))  # Convert text to int
+                except ValueError:
+                    steps = 0  # If invalid input, reset to 0
+
     manager.update(time_delta)
 
     # Get the values from sliders
@@ -113,7 +128,8 @@ while running:
     screen.fill("white")
     vectors = []
     for n in range(steps):
-        magnitude = scaler * ((1 / k) ** n)
+        magnitude = scaler * ((1 / (n+1)**k))
+
         vectors.append(Vector2(magnitude, theta * n))
 
     currentOrigin = originVector
@@ -136,7 +152,7 @@ while running:
     render_text(f'k: {k:.2f}', (300, 15))
     render_text(f'theta: {theta:.2f}', (300, 45))
     render_text(f'Scaler: {scaler:.2f}', (300, 75))
-    render_text(f'Steps: {steps}', (300, 105))
+    render_text(f'Steps: {steps}', (300, 135))
     render_text(f'Final pos: ({round(a,3)}, {round(b,3)})', (screen_size[0]-300, 300))
 
     pygame.display.flip()
