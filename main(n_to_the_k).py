@@ -153,7 +153,9 @@ while running:
     render_text(f'theta: {theta:.2f}', (300, 45))
     render_text(f'Scaler: {scaler:.2f}', (300, 75))
     render_text(f'Steps: {steps}', (300, 135))
-    render_text(f'Final pos: ({round(a,3)}, {round(b,3)})', (screen_size[0]-300, 300))
+    render_text(f'Final Vector pos: ({round(currentOrigin.x/scaler, 3)}, {round(currentOrigin.y/scaler, 3)})', (screen_size[0] - 300, 350))
+    render_text(f'(for k^n) Final pos: ({round(a,3)}, {round(b,3)})', (screen_size[0]-300, 300))
+
 
     pygame.display.flip()
 
