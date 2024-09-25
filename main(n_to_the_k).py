@@ -131,7 +131,7 @@ while running:
         magnitude = scaler * ((1 / (n+1)**k))
 
         vectors.append(Vector2(magnitude, theta * n))
-
+    Vector2.avgVector(vectors).drawVector(originVector, screen, [0,255,0])
     currentOrigin = originVector
     for vector in vectors:
         currentOrigin = vector.drawVector(currentOrigin, screen)
@@ -155,7 +155,6 @@ while running:
     render_text(f'Steps: {steps}', (300, 135))
     render_text(f'Final Vector pos: ({round(currentOrigin.x/scaler, 3)}, {round(currentOrigin.y/scaler, 3)})', (screen_size[0] - 300, 350))
     render_text(f'(for k^n) Final pos: ({round(a,3)}, {round(b,3)})', (screen_size[0]-300, 300))
-
 
     pygame.display.flip()
 
