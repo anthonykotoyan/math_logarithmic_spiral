@@ -44,7 +44,7 @@ steps_label = pygame_gui.elements.UILabel(
 k_slider = pygame_gui.elements.UIHorizontalSlider(
     relative_rect=pygame.Rect((70, 10, 200, 20)),
     start_value=2,
-    value_range=(0.1, 10),
+    value_range=(0.001, 10),
     manager=manager
 )
 
@@ -92,7 +92,7 @@ def render_text(text, position):
 clock = pygame.time.Clock()
 running = True
 
-steps = 0  # Initial value for steps
+steps = 1  # Initial value for steps
 scaler = 400
 originVector = Vector2(0, 0)
 
@@ -114,7 +114,7 @@ while running:
         if event.type == pygame_gui.UI_TEXT_ENTRY_FINISHED:
             if event.ui_element == steps_entry:
                 try:
-                    steps = max(0, int(steps_entry.get_text()))  # Convert text to int
+                    steps = max(0, int(steps_entry.get_text())+1)  # Convert text to int
                 except ValueError:
                     steps = 0  # If invalid input, reset to 0
 
@@ -127,11 +127,17 @@ while running:
 
     screen.fill("white")
     vectors = []
-    for n in range(steps):
-        magnitude = scaler * ((1 / (n+1)**k))
+    for n in range(1, steps):
+        magnitude = scaler * ((1 / (n)**k))
 
-        vectors.append(Vector2(magnitude, theta * n))
-    Vector2.avgVector(vectors).drawVector(originVector, screen, [0,255,0])
+        vectors.append(Vector2(magnitude, theta * (n-1)))
+    avgVec = Vector2(0, 0)
+    for n in range(1, steps):
+        magnitude = scaler * ((1 / (steps * (n) ** k))) * (steps - n+1)
+
+        avgVec = Vector2.addVectors(Vector2(magnitude, theta * (n-1)), avgVec)
+
+    avgVec.drawVector(originVector, screen, [0, 255, 0])
     currentOrigin = originVector
     for vector in vectors:
         currentOrigin = vector.drawVector(currentOrigin, screen)
@@ -152,9 +158,19 @@ while running:
     render_text(f'k: {k:.2f}', (300, 15))
     render_text(f'theta: {theta:.2f}', (300, 45))
     render_text(f'Scaler: {scaler:.2f}', (300, 75))
-    render_text(f'Steps: {steps}', (300, 135))
-    render_text(f'Final Vector pos: ({round(currentOrigin.x/scaler, 3)}, {round(currentOrigin.y/scaler, 3)})', (screen_size[0] - 300, 350))
-    render_text(f'(for k^n) Final pos: ({round(a,3)}, {round(b,3)})', (screen_size[0]-300, 300))
+    render_text(f'Steps: {steps-1}', (300, 135))
+    render_text(f'Drawn Vector pos: ({round(currentOrigin.x/scaler, 3)}, {round(currentOrigin.y/scaler, 3)})', (screen_size[0] - 300, 350))
+    #render_text(f'(for k^n) Final pos: ({round(a,3)}, {round(b,3)})', (screen_size[0]-300, 300))
+    render_text(f'Avg Vector pos: ({round(avgVec.x / scaler, 3)}, {round(avgVec.y / scaler, 3)} )',
+                (screen_size[0] - 300, 300))
+    if avgVec.x != 0:
+        render_text(f'slope: {round(avgVec.y / avgVec.x, 3)}',
+                (screen_size[0] - 300, 250))
+    else:
+        render_text(f'Avg Vector Slope: None',
+                    (screen_size[0] - 300, 250))
+
+
 
     pygame.display.flip()
 
