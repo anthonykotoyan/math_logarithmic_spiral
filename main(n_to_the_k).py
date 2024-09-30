@@ -43,15 +43,15 @@ steps_label = pygame_gui.elements.UILabel(
 # Create sliders for k and theta
 k_slider = pygame_gui.elements.UIHorizontalSlider(
     relative_rect=pygame.Rect((70, 10, 200, 20)),
-    start_value=2,
-    value_range=(0.001, 10),
+    start_value=1,
+    value_range=(0, 10.1),
     manager=manager
 )
 
 theta_slider = pygame_gui.elements.UIHorizontalSlider(
     relative_rect=pygame.Rect((70, 40, 200, 20)),
-    start_value=1.267,
-    value_range=(0.001, 3.14),  # theta range from 0 to pi
+    start_value=90,
+    value_range=(0.001, 360),  # theta range from 0 to pi
     manager=manager
 )
 
@@ -96,6 +96,31 @@ steps = 1  # Initial value for steps
 scaler = 400
 originVector = Vector2(0, 0)
 
+"""
+steps = 2000
+positions = []
+k_increase = .05
+theta_increase = 10
+maxK = 5
+max_theta = 180
+rad_theta_increase = theta_increase*math.pi/180
+print(int(max_theta / theta_increase)*int(maxK/k_increase))
+for A in range(int(max_theta / theta_increase)):
+    positions.append([])
+    for s in range(int(maxK/k_increase)):
+        avgVec = Vector2(0, 0)
+        for n in range(1, steps):
+            magnitude = (1 / (steps * (n ** ((s+0.001)*k_increase)))) * (steps - n + 1)
+
+            avgVec = Vector2.addVectors(Vector2(magnitude, (A+1)*rad_theta_increase * (n-1)), avgVec)
+        positions[A].append([avgVec.x , avgVec.y])
+        #print(f'({round(avgVec.x , 3)}, {round(avgVec.y, 3)})')
+    print("Done!!!\n\n")
+print(positions)
+"""
+
+
+
 while running:
     time_delta = clock.tick(60) / 1000.0  # Seconds since last frame
 
@@ -122,7 +147,7 @@ while running:
 
     # Get the values from sliders
     k = k_slider.get_current_value()
-    theta = theta_slider.get_current_value()
+    theta = theta_slider.get_current_value()*math.pi/180
     scaler = scaler_slider.get_current_value()
 
     screen.fill("white")
@@ -156,7 +181,7 @@ while running:
 
     # Render current values to the right of the GUI
     render_text(f'k: {k:.2f}', (300, 15))
-    render_text(f'theta: {theta:.2f}', (300, 45))
+    render_text(f'theta: {theta_slider.get_current_value():.2f}', (300, 45))
     render_text(f'Scaler: {scaler:.2f}', (300, 75))
     render_text(f'Steps: {steps-1}', (300, 135))
     render_text(f'Drawn Vector pos: ({round(currentOrigin.x/scaler, 3)}, {round(currentOrigin.y/scaler, 3)})', (screen_size[0] - 300, 350))
